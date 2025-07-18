@@ -31,6 +31,10 @@ function ItemRack.IsCata()
 	return wowtoc > 40000 and wowtoc < 50000
 end
 
+function ItemRack.IsMop()
+	return wowtoc > 50000 and wowtoc < 60000
+end
+
 -- [[ Season of Discovery Runes ]]
 function ItemRack.IsEngravingActive()
 	return C_Engraving and C_Engraving.IsEngravingEnabled()
@@ -159,10 +163,12 @@ ItemRack.Menu = {}
 ItemRack.LockList = {} -- index -2 to 11, flag whether item is tagged already for swap
 if ItemRack.IsClassic() then
 	ItemRack.BankSlots = { -1,5,6,7,8,9,10 }
-elseif ItemRack.IsBCC() or ItemRack.IsWrath() or ItemRack.IsCata() then
+elseif ItemRack.IsBCC() or ItemRack.IsWrath() or ItemRack.IsCata() or ItemRack.IsMop() then
 	ItemRack.BankSlots = { -1,5,6,7,8,9,10,11 }
 end
 ItemRack.KnownItems = {} -- cache of known item locations for fast lookup
+
+ItemRack.NrSlots = 19
 
 ItemRack.SlotInfo = {
 	[0] = { name="AmmoSlot", real="Ammo", INVTYPE_AMMO=1 },
@@ -181,9 +187,9 @@ ItemRack.SlotInfo = {
 	[13] = { name="Trinket0Slot", real="Top Trinket", INVTYPE_TRINKET=1, other=14 },
 	[14] = { name="Trinket1Slot", real="Bottom Trinket", INVTYPE_TRINKET=1, other=13 },
 	[15] = { name="BackSlot", real="Cloak", INVTYPE_CLOAK=1 },
-	[16] = { name="MainHandSlot", real="Main hand", INVTYPE_WEAPONMAINHAND=1, INVTYPE_2HWEAPON=1, INVTYPE_WEAPON=1, other=17},
+	[16] = { name="MainHandSlot", real="Main hand", INVTYPE_WEAPONMAINHAND=1, INVTYPE_2HWEAPON=1, INVTYPE_WEAPON=1, INVTYPE_RANGED=1, INVTYPE_RANGEDRIGHT=1, INVTYPE_THROWN=1, other=17},
 	[17] = { name="SecondaryHandSlot", real="Off hand", INVTYPE_WEAPON=1, INVTYPE_WEAPONOFFHAND=1, INVTYPE_SHIELD=1, INVTYPE_HOLDABLE=1, other=16},
-	[18] = { name="RangedSlot", real="Ranged", INVTYPE_RANGED=1, INVTYPE_RANGEDRIGHT=1, INVTYPE_THROWN=1, INVTYPE_RELIC=1},
+	[18] = { name="RangedSlot", real="Ranged", INVTYPE_RELIC=1},
 	[19] = { name="TabardSlot", real="Tabard", INVTYPE_TABARD=1 },
 }
 
@@ -382,7 +388,8 @@ function ItemRack.OnUnitInventoryChanged(self,event,unit)
 			ItemRack.BuildMenu()
 		end
 		if ItemRackOptFrame and ItemRackOptFrame:IsVisible() then
-			for i=0,19 do
+			for i=0,ItemRack.NrSlots do
+				if not (i == 18 and ItemRack.IsMop()) then
 				if not ItemRackOpt.Inv[i].selected then
 					ItemRackOpt.Inv[i].id = ItemRack.GetID(i)
 				end
@@ -783,7 +790,8 @@ function ItemRack.FindItem(id,lock)
 		end
 	end
 	-- search worn equipment
-	for i=0,19 do
+	for i=0,ItemRack.NrSlots do
+		if not (i == 18 and ItemRack.IsMop()) then
 		if id==getid(i) and (not lock or not locklist[-2][i]) then
 			if lock then locklist[-2][i]=1 end
 			return i
@@ -799,7 +807,8 @@ function ItemRack.FindItem(id,lock)
 		end
 	end
 	-- search worn equipment for base id matches
-	for i=0,19 do
+	for i=0,ItemRack.NrSlots do
+		if not (i == 18 and ItemRack.IsMop()) then
 		if sameid(id,getid(i)) and (not lock or not locklist[-2][i]) then
 			if lock then locklist[-2][i]=1 end
 			return i
@@ -966,7 +975,8 @@ function ItemRack.PopulateKnownItems()
 	end
 	local id
 	local getid = ItemRack.GetID
-	for i=0,19 do
+	for i=0,ItemRack.NrSlots do
+		if not (i == 18 and ItemRack.IsMop()) then
 		id = getid(i) --grab ItemRack-style ID for every currently worn equipment piece
 		if id~=0 then
 			known[id] = i*-1 --we were able to generate a valid ID for this item, so store its location (slot)
@@ -1526,7 +1536,8 @@ function ItemRack.newUseAction(slot,cursor,self)
 	if IsEquippedAction(slot) then
 		local actionType,actionId = GetActionInfo(slot)
 		if actionType=="item" then
-			for i=0,19 do
+			for i=0,ItemRack.NrSlots do
+			    if not (i == 18 and ItemRack.IsMop()) then
 				if tonumber(ItemRack.GetIRString(GetInventoryItemLink("player",i),true,true))==actionId then --compare baseID of given item (converted to number) to actionId
 					ItemRack.ReflectItemUse(i)
 					break
@@ -1537,7 +1548,8 @@ function ItemRack.newUseAction(slot,cursor,self)
 end
 
 function ItemRack.newUseItemByName(name)
-	for i=0,19 do
+	for i=0,ItemRack.NrSlots do
+	    if not (i == 18 and ItemRack.IsMop()) then
 		if name==GetItemInfo(GetInventoryItemLink("player",i) or 0) then
 			ItemRack.ReflectItemUse(i)
 			break
@@ -1581,7 +1593,8 @@ function ItemRack.UpdateCombatQueue()
 		end
 	end
 
-	for i=1,19 do
+	for i=1,ItemRack.NrSlots do
+		if not (i == 18 and ItemRack.IsMop()) then
 		queue = _G["Character"..ItemRack.SlotInfo[i].name.."Queue"]
 		if ItemRack.CombatQueue[i] then
 			queue:SetTexture(select(2,ItemRack.GetInfoByID(ItemRack.CombatQueue[i])))
@@ -1754,7 +1767,8 @@ function ItemRack.SetTooltip(self,setname)
 		ItemRack.AnchorTooltip(self)
 		GameTooltip:AddLine(setname)
 		if ItemRackSettings.TinyTooltips~="ON" then
-			for i=0,19 do
+			for i=0,ItemRack.NrSlots do
+				if not (i == 18 and ItemRack.IsMop()) then
 				if set[i] then
 					itemName = ItemRack.GetInfoByID(set[i])
 					if itemName then
@@ -1857,7 +1871,8 @@ end
 function ItemRack.DockMenuToCharacterSheet(self)
 	local name = self:GetName()
 	local slot
-	for i=0,19 do
+	for i=0,ItemRack.NrSlots do
+		if not (i == 18 and ItemRack.IsMop()) then
 		if name=="Character"..ItemRack.SlotInfo[i].name then
 			slot = i
 		end
