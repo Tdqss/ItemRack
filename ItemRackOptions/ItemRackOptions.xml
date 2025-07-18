@@ -991,20 +991,20 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="ItemRackOptInv18" inherits="ItemRackOptInvTemplate" id="18">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="ItemRackOptInv17" relativePoint="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="4" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
+			<!-- <CheckButton name="ItemRackOptInv18" inherits="ItemRackOptInvTemplate" id="18"> -->
+				<!-- <Anchors> -->
+					<!-- <Anchor point="BOTTOMLEFT" relativeTo="ItemRackOptInv17" relativePoint="BOTTOMRIGHT"> -->
+						<!-- <Offset> -->
+							<!-- <AbsDimension x="4" y="0"/> -->
+						<!-- </Offset> -->
+					<!-- </Anchor> -->
+				<!-- </Anchors> -->
+			<!-- </CheckButton> -->
 			<CheckButton name="ItemRackOptInv0" inherits="ItemRackOptInvTemplate" id="0">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="ItemRackOptInv18" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="ItemRackOptInv17" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="6" y="0"/>
+							<AbsDimension x="10" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1653,14 +1653,14 @@
 									<Anchor point="TOPLEFT" relativeTo="ItemRackOptSetsIcon16" relativePoint="TOPRIGHT"/>
 								</Anchors>
 							</Button>
-							<Button name="ItemRackOptSetsIcon18" inherits="ItemRackOptIconTemplate" id="18">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="ItemRackOptSetsIcon17" relativePoint="TOPRIGHT"/>
-								</Anchors>
-							</Button>
+							<!-- <Button name="ItemRackOptSetsIcon18" inherits="ItemRackOptIconTemplate" id="18"> -->
+								<!-- <Anchors> -->
+									<!-- <Anchor point="TOPLEFT" relativeTo="ItemRackOptSetsIcon17" relativePoint="TOPRIGHT"/> -->
+								<!-- </Anchors> -->
+							<!-- </Button> -->
 							<Button name="ItemRackOptSetsIcon19" inherits="ItemRackOptIconTemplate" id="19">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="ItemRackOptSetsIcon18" relativePoint="TOPRIGHT"/>
+									<Anchor point="TOPLEFT" relativeTo="ItemRackOptSetsIcon17" relativePoint="TOPRIGHT"/>
 								</Anchors>
 							</Button>
 							<Button name="ItemRackOptSetsIcon20" inherits="ItemRackOptIconTemplate" id="20">
