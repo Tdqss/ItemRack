@@ -390,8 +390,9 @@ function ItemRack.OnUnitInventoryChanged(self,event,unit)
 		if ItemRackOptFrame and ItemRackOptFrame:IsVisible() then
 			for i=0,ItemRack.NrSlots do
 				if not (i == 18 and ItemRack.IsMop()) then
-				if not ItemRackOpt.Inv[i].selected then
-					ItemRackOpt.Inv[i].id = ItemRack.GetID(i)
+					if not ItemRackOpt.Inv[i].selected then
+						ItemRackOpt.Inv[i].id = ItemRack.GetID(i)
+					end
 				end
 			end
 			ItemRackOpt.UpdateInv()
@@ -792,9 +793,10 @@ function ItemRack.FindItem(id,lock)
 	-- search worn equipment
 	for i=0,ItemRack.NrSlots do
 		if not (i == 18 and ItemRack.IsMop()) then
-		if id==getid(i) and (not lock or not locklist[-2][i]) then
-			if lock then locklist[-2][i]=1 end
-			return i
+			if id==getid(i) and (not lock or not locklist[-2][i]) then
+				if lock then locklist[-2][i]=1 end
+				return i
+			end
 		end
 	end
 	-- search bags for base id matches
@@ -809,9 +811,10 @@ function ItemRack.FindItem(id,lock)
 	-- search worn equipment for base id matches
 	for i=0,ItemRack.NrSlots do
 		if not (i == 18 and ItemRack.IsMop()) then
-		if sameid(id,getid(i)) and (not lock or not locklist[-2][i]) then
-			if lock then locklist[-2][i]=1 end
-			return i
+			if sameid(id,getid(i)) and (not lock or not locklist[-2][i]) then
+				if lock then locklist[-2][i]=1 end
+				return i
+			end
 		end
 	end
 end
@@ -977,9 +980,10 @@ function ItemRack.PopulateKnownItems()
 	local getid = ItemRack.GetID
 	for i=0,ItemRack.NrSlots do
 		if not (i == 18 and ItemRack.IsMop()) then
-		id = getid(i) --grab ItemRack-style ID for every currently worn equipment piece
-		if id~=0 then
-			known[id] = i*-1 --we were able to generate a valid ID for this item, so store its location (slot)
+			id = getid(i) --grab ItemRack-style ID for every currently worn equipment piece
+			if id~=0 then
+				known[id] = i*-1 --we were able to generate a valid ID for this item, so store its location (slot)
+			end
 		end
 	end
 	for i=0,4 do
@@ -1538,9 +1542,10 @@ function ItemRack.newUseAction(slot,cursor,self)
 		if actionType=="item" then
 			for i=0,ItemRack.NrSlots do
 			    if not (i == 18 and ItemRack.IsMop()) then
-				if tonumber(ItemRack.GetIRString(GetInventoryItemLink("player",i),true,true))==actionId then --compare baseID of given item (converted to number) to actionId
-					ItemRack.ReflectItemUse(i)
-					break
+					if tonumber(ItemRack.GetIRString(GetInventoryItemLink("player",i),true,true))==actionId then --compare baseID of given item (converted to number) to actionId
+						ItemRack.ReflectItemUse(i)
+						break
+					end
 				end
 			end
 		end
@@ -1550,9 +1555,10 @@ end
 function ItemRack.newUseItemByName(name)
 	for i=0,ItemRack.NrSlots do
 	    if not (i == 18 and ItemRack.IsMop()) then
-		if name==GetItemInfo(GetInventoryItemLink("player",i) or 0) then
-			ItemRack.ReflectItemUse(i)
-			break
+			if name==GetItemInfo(GetInventoryItemLink("player",i) or 0) then
+				ItemRack.ReflectItemUse(i)
+				break
+			end
 		end
 	end
 end
@@ -1595,12 +1601,13 @@ function ItemRack.UpdateCombatQueue()
 
 	for i=1,ItemRack.NrSlots do
 		if not (i == 18 and ItemRack.IsMop()) then
-		queue = _G["Character"..ItemRack.SlotInfo[i].name.."Queue"]
-		if ItemRack.CombatQueue[i] then
-			queue:SetTexture(select(2,ItemRack.GetInfoByID(ItemRack.CombatQueue[i])))
-			queue:Show()
-		else
-			queue:Hide()
+			queue = _G["Character"..ItemRack.SlotInfo[i].name.."Queue"]
+			if ItemRack.CombatQueue[i] then
+				queue:SetTexture(select(2,ItemRack.GetInfoByID(ItemRack.CombatQueue[i])))
+				queue:Show()
+			else
+				queue:Hide()
+			end
 		end
 	end
 
@@ -1769,19 +1776,20 @@ function ItemRack.SetTooltip(self,setname)
 		if ItemRackSettings.TinyTooltips~="ON" then
 			for i=0,ItemRack.NrSlots do
 				if not (i == 18 and ItemRack.IsMop()) then
-				if set[i] then
-					itemName = ItemRack.GetInfoByID(set[i])
-					if itemName then
-						if itemName~="(empty)" and ItemRack.GetCountByID(set[i])==0 then
-							if not ItemRack.FindInBank(set[i]) then
-								itemColor = "FFFF1111"
+					if set[i] then
+						itemName = ItemRack.GetInfoByID(set[i])
+						if itemName then
+							if itemName~="(empty)" and ItemRack.GetCountByID(set[i])==0 then
+								if not ItemRack.FindInBank(set[i]) then
+									itemColor = "FFFF1111"
+								else
+									itemColor = "FF4C80FF"
+								end
 							else
-								itemColor = "FF4C80FF"
+								itemColor = "FFAAAAAA"
 							end
-						else
-							itemColor = "FFAAAAAA"
+							GameTooltip:AddLine("|cFFFFFFFF"..ItemRack.SlotInfo[i].real..": |c"..itemColor..itemName)
 						end
-						GameTooltip:AddLine("|cFFFFFFFF"..ItemRack.SlotInfo[i].real..": |c"..itemColor..itemName)
 					end
 				end
 			end
@@ -1873,8 +1881,9 @@ function ItemRack.DockMenuToCharacterSheet(self)
 	local slot
 	for i=0,ItemRack.NrSlots do
 		if not (i == 18 and ItemRack.IsMop()) then
-		if name=="Character"..ItemRack.SlotInfo[i].name then
-			slot = i
+			if name=="Character"..ItemRack.SlotInfo[i].name then
+				slot = i
+			end
 		end
 	end
 	if slot then
